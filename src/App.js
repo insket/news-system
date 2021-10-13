@@ -3,9 +3,7 @@ import 'antd/dist/antd.css';
 
 function App() {
   return (
-    <div>
-      <Router/>
-    </div>
+    <Router/>
   )
 }
 
