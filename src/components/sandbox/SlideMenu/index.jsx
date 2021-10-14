@@ -7,7 +7,8 @@ import {
   SubnodeOutlined
 } from '@ant-design/icons';
 import { withRouter } from 'react-router-dom';
-import axios from 'axios'
+import { getSlideMenuList } from '../../../api/slidemenu.js'
+
 import './index.css'
 
 const { Sider } = Layout;
@@ -27,13 +28,17 @@ function SlideMenu(props) {
   // 存储导航栏数据
   const [menu, setMenu] = useState([])
 
-  // 获取导航栏数据
+  // 调用 slideMenuList 获取导航栏数据
   useEffect(() => {
-    axios.get('http://localhost:8000/rights?_embed=children').then((res) => {
-      // console.log(res.data)
-      setMenu(res.data)
-    })
+    slideMenuList()
   }, [])
+
+  // 获取导航栏数据
+  const slideMenuList = async () => {
+    const data = await getSlideMenuList()
+    // console.log(data)
+    setMenu(data)
+  }
 
   // 判断导航栏列表展示项  pagepermisson 是否为 1
   const checkPagePermisson = (item) => {
