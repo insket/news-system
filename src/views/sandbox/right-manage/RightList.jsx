@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Table, Tag, Button, Modal } from 'antd'
-import { getRightList, deleteSlideMenuList, deleteChildrenList } from '../../../api/right-manage'
+import { Table, Tag, Button, Modal, Popover, Switch } from 'antd'
+import {
+   getRightList,
+   deleteSlideMenuList,
+   deleteChildrenList,
+   changePagepermisson,
+   changeChildrenPagepermisson
+  } from '../../../api/right-manage'
 import {
   EditOutlined,
   DeleteOutlined,
@@ -71,6 +77,21 @@ export default function RightList() {
 
   }
 
+  // 切换配置项状态
+  const switchMethod = (item) => { 
+    // console.log(item)
+    item.pagepermisson = item.pagepermisson === 1 ? 0 : 1
+    setDataSource([...dataSource])
+    //  同步后端
+    // 一级权限
+    if (item.grade === 1) {
+      changePagepermisson(item.id, item.pagepermisson)
+    }else{
+      // 二级权限
+      changeChildrenPagepermisson(item.id, item.pagepermisson)
+    }
+  }
+
   const columns = [
     {
       title: 'ID',
@@ -97,14 +118,28 @@ export default function RightList() {
       title: '操作',
       render: (item) => {
         return (
-          <div>
-            <Button
-              shape="circle"
-              type="primary"
-              icon={<EditOutlined />}
-              style={{marginLeft:'-20px'}}
+          <div style={{marginLeft:'-20px'}}>
+            {/* 配置项 */}
+            <Popover
+              content={
+                <div style={{textAlign:'center'}}>
+                  <Switch checked={item.pagepermisson} onChange={() => {
+                    switchMethod(item)
+                  }}/>
+                </div>
+              }
+              title='页面配置项'
+              trigger={item.pagepermisson === undefined ? '':'hover'}
             >
-            </Button>
+              <Button
+                shape="circle"
+                type="primary"
+                icon={<EditOutlined />}
+                disabled={item.pagepermisson === undefined}
+              >
+              </Button>
+            </Popover>
+            {/* 删除 */}
             <Button
               shape="circle"
               danger

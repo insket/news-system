@@ -29,3 +29,29 @@ export const deleteChildrenList = (id) => {
     url: `/children/${id}`
   })
 }
+
+/*
+    修改配置项状态  一级
+*/
+export const changePagepermisson = (id,pagepermisson) => {
+  return request({
+    method: 'patch',
+    url: `/rights/${id}`,
+    data: {
+      pagepermisson
+    }
+  })
+}
+
+/*
+    修改配置项状态  二级
+*/
+export const changeChildrenPagepermisson = (id,pagepermisson) => {
+  return request({
+    method: 'patch',
+    url: `/children/${id}`,
+    data: {
+      pagepermisson
+    }
+  })
+}
