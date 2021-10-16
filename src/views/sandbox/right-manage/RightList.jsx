@@ -41,7 +41,7 @@ export default function RightList() {
     setDataSource(data)
   }
 
-  // 弹出确认删除框
+  // 点击删除弹出删除框
   const isConfirm = (item) => {
     confirm({
       title: '确认要删除改权限吗?',
