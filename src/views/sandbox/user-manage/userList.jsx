@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { getUserList, getRegionsList, getRoleList, getNewRoleList, deleteRoleList } from '../../../api/user-manage'
+import {
+  getUserList,
+  getRegionsList,
+  getRoleList,
+  getNewRoleList,
+  deleteRoleList,
+  changeUserState
+} from '../../../api/user-manage'
 import UserForm from '../../../components/user-manage/UserForm';
 import { Table, Switch, Button, Modal } from 'antd'
 import {
@@ -16,14 +23,20 @@ const { confirm } = Modal;
 export default function UserList() {
 
   const [dataSource, setDataSource] = useState([])
-  // 弹出层状态显示隐藏
+  // 添加弹出层状态显示隐藏
   const [isAddVisible, setIsAddVisible] = useState(false)
   // 角色列表
   const [roleList, setRoleLIst] = useState([])
   // 区域列表
   const [regionList, setRegionList] = useState([])
+  // 更新弹出层显示隐藏
+  const [isUpdateVisible, setIsUpdateVisible] = useState(false)
+  // 编辑框禁用状态
+  const [isUpdateDisabled, setIsUpdateDisabled] = useState(false)
   // 添加用户数据
   const addForm = useRef(null)
+  // 编辑用户数据
+  const updateForm = useRef(null)
 
   useEffect(() => {
    UserList()
@@ -72,7 +85,7 @@ export default function UserList() {
     deleteRoleList(item.id)
   }
 
-  // 校验成功得到表单数据,提交
+  // 添加弹出层校验成功得到表单数据,提交
   const addFormOk = () => {
     console.log(addForm)
     addForm.current.validateFields().then(value => {
@@ -85,6 +98,33 @@ export default function UserList() {
     }).catch(err => {
       console.log(err)
     })
+  }
+
+  // 切换用户状态
+  const handleChange = (item) => {
+    item.roleState = !item.roleState
+    setDataSource([...dataSource])
+    changeUserState(item.id, item.roleState)
+  }
+
+  // 编辑用户信息
+  const handleUpdate = (item) => {
+    setTimeout(() => {
+      setIsUpdateVisible(true)
+      if (item.roleId === 1) {
+        // 禁用
+        setIsUpdateDisabled(true)
+      }else{
+        // 取消禁用
+        setIsUpdateDisabled(false)
+      }
+      updateForm.current.setFieldsValue(item)
+    }, 0);
+  }
+
+  //  编辑弹出层点击确定的回调
+  const updateFormOk = () => {
+    
   }
 
   const columns = [
@@ -110,7 +150,7 @@ export default function UserList() {
       title: '用户状态',
       dataIndex: 'roleState',
       render: (roleState, item) => {
-        return <Switch checked={roleState} disabled={item.default}></Switch>
+        return <Switch onChange={()=>handleChange(item)} checked={roleState} disabled={item.default}></Switch>
       }
     },
     {
@@ -124,6 +164,7 @@ export default function UserList() {
               shape="circle"
               icon={<EditFilled />}
               disabled={item.default}
+              onClick={() => {handleUpdate(item)}}
             />
             {/* 删除 */}
             <Button
@@ -153,7 +194,7 @@ export default function UserList() {
         }}
       />;
 
-    {/*  弹出层 */}
+    {/*  添加用户弹出层 */}
     <Modal
       visible={isAddVisible}
       title="添加用户"
@@ -161,10 +202,31 @@ export default function UserList() {
       cancelText="取消"
       onCancel={() => {
         setIsAddVisible(false)
+        setIsUpdateDisabled(!isUpdateDisabled)
       }}
       onOk={() => addFormOk()}
     >
      <UserForm regionList={regionList} roleList={roleList} ref={addForm}></UserForm>
+    </Modal>
+
+      {/*  编辑用户弹出层 */}
+    <Modal
+      visible={isUpdateVisible}
+      title="更新用户"
+      okText="确定"
+      cancelText="取消"
+      onCancel={() => {
+        setIsUpdateVisible(false)
+      }}
+      onOk={() => updateFormOk()}
+    >
+    <UserForm
+      regionList={regionList}
+      roleList={roleList}
+      ref={updateForm}
+      isUpdateDisabled={isUpdateDisabled}
+    >
+      </UserForm>
     </Modal>
     </div>
   )

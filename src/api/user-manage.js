@@ -43,14 +43,25 @@ export const getRegionsList = () => {
 /*
   获取前端返回的 角色列表(添加用户)
 */
-  export const getNewRoleList = (value) => {
-    return request({
-      method: 'post',
-      url: '/users',
-      data: {
-        ...value,
-        'roleState':true,
-        'default':false,
-      }
-    })
-  }
+export const getNewRoleList = (value) => {
+  return request({
+    method: 'post',
+    url: '/users',
+    data: {
+      ...value,
+      'roleState':true,
+      'default':false,
+    }
+  })
+}
+
+// 用户状态切换
+export const changeUserState = (id,roleState) => {
+  return request({
+    method: 'patch',
+    url: `/users/${id}`,
+    data: {
+      roleState,
+    }
+  })
+}
